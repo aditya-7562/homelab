@@ -1,0 +1,27 @@
+version: "3.8"
+
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      # Crucial for n8n to generate the correct OAuth & Webhook URLs
+      - WEBHOOK_TUNNEL_URL=https://n8n.adityaforge.space
+      - N8N_HOST=n8n.adityaforge.space
+      - N8N_PROTOCOL=https
+      - N8N_PORT=5678
+      # Use a strong encryption key to secure credentials
+      - N8N_ENCRYPTION_KEY=50d8894eb22e2db83c4687c89ca91d6903f566265b938ceda92da8da1777991c
+      # - N8N_PAYLOAD_SIZE_MAX=32mb
+    volumes:
+      - ./data:/home/node/.n8n
+    networks:
+      - homelab_proxy
+
+networks:
+  homelab_proxy:
+    external: true

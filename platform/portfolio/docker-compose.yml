@@ -1,0 +1,17 @@
+version: "3.8"
+
+services:
+  portfolio:
+    # This will look for a 'Dockerfile' inside the ./site directory
+    build: ./site
+    container_name: portfolio
+    restart: unless-stopped
+    expose:
+      - "80"
+    networks:
+      - homelab_proxy
+
+networks:
+  homelab_proxy:
+    # Ensure this network exists: docker network create homelab_proxy
+    external: true

@@ -1,0 +1,38 @@
+version: "3.9"
+
+services:
+  # Jenkins Controller
+  jenkins:
+    image: jenkins/jenkins:lts
+    container_name: jenkins
+    restart: unless-stopped
+    user: root
+    ports:
+      - "8080:8080"   # Jenkins Web UI
+      - "50000:50000" # Agent Communication
+    volumes:
+      - ./jenkins_home:/var/jenkins_home
+    environment:
+      - DOCKER_HOST=tcp://dind:2375
+      - DOCKER_TLS_CERTDIR=""
+    networks:
+      - homelab_proxy    # Connection to your Nginx Proxy Manager
+      - jenkins_internal # Connection to the Docker daemon
+
+  # Docker-in-Docker (DinD) Service
+  dind:
+    image: docker:dind
+    container_name: jenkins-docker
+    privileged: true # Required for DinD to function
+    restart: unless-stopped
+    environment:
+      - DOCKER_TLS_CERTDIR=""
+    volumes:
+      - ./docker:/var/lib/docker
+    networks:
+      - jenkins_internal
+
+networks:
+  jenkins_internal:
+  homelab_proxy:
+    external: true
